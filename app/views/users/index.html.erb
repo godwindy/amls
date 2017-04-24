@@ -1,0 +1,105 @@
+<h3>Import</h3>
+<%= form_tag import_users_path, multipart: true do %>
+<div class="row">
+ <div class="col-sm-4">
+ <%= file_field_tag :file , :class=>"btn btn-info" %>
+ <%= submit_tag "Import", :class=>"btn btn-info"%>
+ </div>
+</div>
+<% end %>
+
+<h3>Display a table of existing records with pagination</h3>
+<div class="col-md-12">
+  <table id="showusers" class="display">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>ListAgentFirstName</th>
+        <th>ListAgentLastName</th>
+        <th>ListAgentEmail</th>
+        <th>ListAgentCellPhone</th>
+        <th>ListOfficeName</th>
+        <th>CountyOrParish</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each_with_index do |user, index| %>
+        <tr>
+          <td><%= index+1 %></td>
+          <td><%= user.ListAgentFirstName %></td>
+          <td><%= user.ListAgentLastName %></td>
+          <td><%= user.ListAgentEmail %></td>
+          <td><%= user.ListAgentCellPhone %></td>
+          <td><%= user.ListOfficeName %></td>
+          <td><%= user.CountyOrParish %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <input class="btn btn-success" type="button" id="selectall" value="select all in this page"/>
+  <input class="btn btn-success" type="button" id="deselectall" value="clear"/>
+  <input class="btn btn-success" type="button" id="button" value="download selected"/>
+  <h3>Selected mail</h3>
+  <div class="col-md-12">
+  <%= form_tag '/blocklists' %>
+  <textarea rows="5" cols="50" name="blocktext" id="selectedrow"></textarea>
+  <input type="hidden" name="toadd" value="1">
+  <%= submit_tag "add to block list", :class=>"btn btn-danger" %>
+  </div>
+  <script> 
+    $('#showusers').DataTable(
+	     {
+	         "lengthMenu": [[50, 100, 200], [50, 100, 200]]
+       } 
+    );
+
+    $(document).ready(function() {
+        var table = $('#showusers').DataTable();
+        function updateselected()
+        {
+            var i = 0;
+            var mlist = "";
+            var leng = table.rows('.selected').data().length;
+            var sel = table.rows('.selected').data();
+            for(i=0; i < leng; i++)
+            { 
+              mlist = mlist + (i==0?"":",") + sel[i][3];   
+            }			     
+            $('#selectedrow').val(mlist);  
+        }
+
+
+        $('#showusers tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected');
+                updateselected();
+        });
+
+        $('#deselectall').click( function() {
+          $('#showusers tbody tr').removeClass('selected');
+            updateselected();
+        });
+
+        $('#selectall').click( function() {
+          $('#showusers tbody tr').removeClass('selected');
+          $('#showusers tbody tr').toggleClass('selected');
+          updateselected();
+        });
+
+        $('#button').click( function () {
+          var i = 0;
+          var mlist = "";
+          var leng = table.rows('.selected').data().length;
+          var sel = table.rows('.selected').data();
+          var csvContent = "data:text/csv;charset=utf-8,";
+          for(i=0; i < leng; i++)
+          { 
+              mlist = mlist + (i==0?"":",") + sel[i][3];   
+              csvContent += sel[i][3] + "\n"; 
+            }			     
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
+          });
+    } );
+  </script>
+</div>
+</div>

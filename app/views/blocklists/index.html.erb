@@ -1,0 +1,56 @@
+<h3>Blocklist</h3>
+
+<h3>Display a list of blocked email</h3>
+<div class="col-md-12">
+  
+  <table id="blockss" class="display">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>blocked mail</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @blocklists.each_with_index do |blk, index| %>
+        <tr>
+          <td><%= index+1 %></td>
+          <td><%= blk.ListAgentEmail %></td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <h3>edit blocked mail</h3>
+  <div class="col-md-12">
+  <%= form_tag %>
+  <textarea rows="5" cols="50" name="blocktext" id="blocktext"></textarea>
+  <%= submit_tag "Update", :class => "btn btn-warning"  %>
+  </div>
+  <script> 
+     $(document).ready(function() {
+		var table = $('#blockss').DataTable(
+                 {"paging":   true,
+		 "ordering": true,
+		 "info":     true,
+		 "lengthMenu": [[15, 100, 200], [15, 100, 200]]
+                 }
+                );
+		function updateblocked()
+		{
+		  var i = 0;
+		  var mlist = "";
+		  var leng = table.rows().data().length;
+		  var sel = table.rows().data();
+		  for(i=0; i < leng; i++)
+		  { 
+		     mlist = mlist + (i==0?"":",") + sel[i][1];   
+		  }			     
+		  $('#blocktext').val(mlist);  
+		}
+		updateblocked();
+		} );
+  </script>
+</div>
+
+
+
+</div>
